@@ -9,7 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class ContractController {
      * 续签合同
      */
     @PutMapping("/{id}/renew")
-    public ResponseEntity<Contract> renewContract(@PathVariable Long id, 
+    public ResponseEntity<Contract> renewContract(@PathVariable Long id,
                                                 @RequestParam LocalDate newEndDate) {
         Contract contract = contractService.renewContract(id, newEndDate);
         return ResponseEntity.ok(contract);
@@ -56,7 +57,7 @@ public class ContractController {
      * 终止合同
      */
     @PutMapping("/{id}/terminate")
-    public ResponseEntity<Void> terminateContract(@PathVariable Long id, 
+    public ResponseEntity<Void> terminateContract(@PathVariable Long id,
                                                @RequestParam String reason) {
         contractService.terminateContract(id, reason);
         return ResponseEntity.ok().build();

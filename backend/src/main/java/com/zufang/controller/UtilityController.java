@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -80,19 +80,19 @@ public class UtilityController {
         // Getters and Setters
         public Long getContractId() { return contractId; }
         public void setContractId(Long contractId) { this.contractId = contractId; }
-        
+
         public Long getRoomId() { return roomId; }
         public void setRoomId(Long roomId) { this.roomId = roomId; }
-        
+
         public BigDecimal getWaterReading() { return waterReading; }
         public void setWaterReading(BigDecimal waterReading) { this.waterReading = waterReading; }
-        
+
         public BigDecimal getElectricityReading() { return electricityReading; }
         public void setElectricityReading(BigDecimal electricityReading) { this.electricityReading = electricityReading; }
-        
+
         public BigDecimal getGasReading() { return gasReading; }
         public void setGasReading(BigDecimal gasReading) { this.gasReading = gasReading; }
-        
+
         public LocalDate getRecordDate() { return recordDate; }
         public void setRecordDate(LocalDate recordDate) { this.recordDate = recordDate; }
     }

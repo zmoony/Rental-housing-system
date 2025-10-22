@@ -7,7 +7,7 @@
           <el-icon><Plus /></el-icon>
           记录读数
         </el-button>
-        <el-button @click="generateMonthlyBills">
+        <el-button @click="handleGenerateMonthlyBills">
           <el-icon><Refresh /></el-icon>
           生成月度账单
         </el-button>
@@ -285,7 +285,7 @@ const resetRecordForm = () => {
   recordFormRef.value?.resetFields();
 };
 
-const generateMonthlyBills = async () => {
+const handleGenerateMonthlyBills = async () => {
   try {
     await generateMonthlyBills();
     ElMessage.success("月度账单生成成功");

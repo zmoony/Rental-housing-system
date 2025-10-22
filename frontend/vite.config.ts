@@ -20,6 +20,7 @@ export default defineConfig({
       "@": resolve(__dirname, "src")
     }
   },
+  publicDir: "public",
   server: {
     port: 3000,
     proxy: {
@@ -33,6 +34,9 @@ export default defineConfig({
     outDir: "dist",
     sourcemap: false,
     rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html")
+      },
       output: {
         manualChunks: {
           vendor: ["vue", "vue-router", "pinia"],

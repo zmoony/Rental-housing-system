@@ -9,8 +9,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/zufang_db
-    username: zufang_user
-    password: zufang_password
+    username: admin
+    password: Wiscom123!
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 20

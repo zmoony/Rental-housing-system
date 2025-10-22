@@ -60,22 +60,47 @@ zufang/
 ## 快速开始
 
 ### 环境要求
-- Node.js 16+
-- Java 17+
-- PostgreSQL 13+
-- Docker (可选)
+- Docker 20.10+
+- Docker Compose 2.0+
+- 至少4GB内存
+- 10GB可用磁盘空间
+
+### 一键启动 (推荐)
+```bash
+# Linux/Mac
+chmod +x start.sh
+./start.sh
+
+# Windows
+start.bat
+```
+
+### 手动启动
+```bash
+# 1. 停止现有容器
+docker-compose down
+
+# 2. 构建并启动所有服务
+docker-compose up --build -d
+
+# 3. 查看服务状态
+docker-compose ps
+```
+
+### 访问系统
+- 前端界面: http://localhost
+- 后端API: http://localhost/api
+- 数据库: localhost:5432
+
+### 默认账号
+- 用户名: `admin`
+- 密码: `admin123`
 
 ### 本地开发
-1. 克隆项目
-2. 启动 PostgreSQL 数据库
-3. 运行数据库初始化脚本
-4. 启动后端服务
-5. 启动前端服务
-
-### Docker 部署
-```bash
-docker-compose up -d
-```
+1. 启动 PostgreSQL 数据库
+2. 运行数据库初始化脚本: `database/init.sql`
+3. 启动后端服务: `cd backend && mvn spring-boot:run`
+4. 启动前端服务: `cd frontend && npm run dev`
 
 ## 许可证
 MIT License

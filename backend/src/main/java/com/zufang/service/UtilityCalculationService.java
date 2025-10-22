@@ -2,8 +2,10 @@ package com.zufang.service;
 
 import com.zufang.entity.UtilityRecord;
 import com.zufang.entity.FeeConfig;
+import com.zufang.entity.Contract;
 import com.zufang.mapper.UtilityRecordMapper;
 import com.zufang.mapper.FeeConfigMapper;
+import com.zufang.mapper.ContractMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class UtilityCalculationService {
 
     private final UtilityRecordMapper utilityRecordMapper;
     private final FeeConfigMapper feeConfigMapper;
+    private final ContractMapper contractMapper;
 
     /**
      * 计算水电费
@@ -108,8 +111,9 @@ public class UtilityCalculationService {
         for (Contract contract : activeContracts) {
             try {
                 // 检查是否已生成该月账单
+                String monthStr = String.format("%04d-%02d", lastMonth.getYear(), lastMonth.getMonthValue());
                 UtilityRecord existingRecord = utilityRecordMapper.getRecordByContractAndMonth(
-                    contract.getId(), lastMonth.getYear(), lastMonth.getMonthValue());
+                    contract.getId(), monthStr);
                 
                 if (existingRecord == null) {
                     // 生成水电费账单（这里需要实际读取表数据）
