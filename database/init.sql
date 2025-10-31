@@ -232,14 +232,15 @@ CREATE INDEX idx_system_logs_created ON system_logs(created_at);
 
 -- 插入初始数据
 INSERT INTO
-  users (username, password, email, real_name, role)
+  users (username, password, email, real_name, role, status)
 VALUES
   (
     'admin',
-    'admin123',
+    '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyUor6/Nm', -- 这是'admin'经过BCrypt加密后的值
     'admin@zufang.com',
     '系统管理员',
-    'ADMIN'
+    'ADMIN',
+    'ACTIVE'
   );
 
 INSERT INTO

@@ -1,42 +1,28 @@
-import { createApp } from "vue";
-import { createPinia } from "pinia";
-import ElementPlus from "element-plus";
-import "element-plus/dist/index.css";
-import * as ElementPlusIconsVue from "@element-plus/icons-vue";
-import zhCn from "element-plus/dist/locale/zh-cn.mjs";
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import './assets/styles/theme.css'
 
-import App from "./App.vue";
-import router from "./router";
+// 引入Font Awesome 6
+const fontAwesomeCSS = document.createElement('link')
+fontAwesomeCSS.rel = 'stylesheet'
+fontAwesomeCSS.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+document.head.appendChild(fontAwesomeCSS)
 
-async function bootstrap() {
-  // 运行时配置：优先从 /config.json 读取
-  try {
-    const resp = await fetch("/config.json", { cache: "no-store" });
-    if (resp.ok) {
-      const cfg = await resp.json();
-      (window as any).__APP_CONFIG__ = Object.assign({}, (window as any).__APP_CONFIG__ || {}, cfg);
-      if (cfg.APP_TITLE) {
-        document.title = cfg.APP_TITLE;
-      }
-    }
-  } catch (e) {
-    // 忽略，使用内置或 .env 配置
-  }
+const app = createApp(App)
 
-  const app = createApp(App);
-
-  // 注册 Element Plus 图标
-  for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-    app.component(key, component);
-  }
-
-  app.use(createPinia());
-  app.use(router);
-  app.use(ElementPlus, {
-    locale: zhCn
-  });
-
-  app.mount("#app");
+// 注册Element Plus图标
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
 }
 
-bootstrap();
+app.use(router)
+app.use(ElementPlus, {
+  locale: zhCn,
+})
+
+app.mount('#app')

@@ -1,7 +1,12 @@
 package com.zufang.controller;
 
+import com.zufang.common.ApiResponse;
 import com.zufang.entity.User;
+import com.zufang.exception.BusinessException;
+import com.zufang.mapper.UserMapper;
 import com.zufang.service.AuthService;
+import com.zufang.utils.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +23,20 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+  private final AuthService authService;
+  private final JwtUtil jwtUtil;
+  private final UserMapper userMapper;
 
     /**
      * 用户登录
      */
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginRequest) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> login(@RequestBody Map<String, String> loginRequest) {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
-        
+
         Map<String, Object> result = authService.login(username, password);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     /**
@@ -45,16 +52,20 @@ public class AuthController {
      * 获取用户信息
      */
     @GetMapping("/user-info")
-    public ResponseEntity<User> getUserInfo() {
-        // 这里应该从JWT token中获取用户信息
-        // 暂时返回模拟数据
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("admin");
-        user.setRealName("系统管理员");
-        user.setRole("ADMIN");
-        user.setStatus("ACTIVE");
-        
-        return ResponseEntity.ok(user);
+    public ResponseEntity<ApiResponse<User>> getUserInfo(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new BusinessException("未提供有效的认证token");
+        }
+
+        String token = authHeader.substring(7);
+        String username = jwtUtil.getUsernameFromToken(token);
+
+        User user = userMapper.getUserByUsername(username);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        return ResponseEntity.ok(ApiResponse.success(user));
     }
 }

@@ -31,4 +31,5 @@ public interface UserMapper extends BaseMapper<User> {
      */
     @Select("SELECT * FROM users WHERE status = 'ACTIVE' ORDER BY created_at DESC")
     List<User> getActiveUsers();
+
 }

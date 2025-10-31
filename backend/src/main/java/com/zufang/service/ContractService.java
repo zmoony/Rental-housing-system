@@ -3,6 +3,7 @@ package com.zufang.service;
 import com.zufang.entity.Contract;
 import com.zufang.entity.Room;
 import com.zufang.entity.Tenant;
+import com.zufang.exception.BusinessException;
 import com.zufang.mapper.ContractMapper;
 import com.zufang.mapper.RoomMapper;
 import com.zufang.mapper.TenantMapper;
@@ -36,13 +37,13 @@ public class ContractService {
         // 验证房间是否可用
         Room room = roomMapper.selectById(contract.getRoomId());
         if (room == null || !"AVAILABLE".equals(room.getStatus())) {
-            throw new RuntimeException("房间不可用");
+            throw new BusinessException("房间不可用");
         }
 
         // 验证租户是否存在
         Tenant tenant = tenantMapper.selectById(contract.getTenantId());
         if (tenant == null || !"ACTIVE".equals(tenant.getStatus())) {
-            throw new RuntimeException("租户状态异常");
+            throw new BusinessException("租户状态异常");
         }
 
         // 生成合同编号
@@ -64,7 +65,7 @@ public class ContractService {
         tenant.setMoveInDate(contract.getStartDate());
         tenantMapper.updateById(tenant);
 
-        log.info("合同创建成功 - 合同编号: {}, 房间ID: {}, 租户ID: {}", 
+        log.info("合同创建成功 - 合同编号: {}, 房间ID: {}, 租户ID: {}",
                 contractNumber, contract.getRoomId(), contract.getTenantId());
 
         return contract;
@@ -77,11 +78,11 @@ public class ContractService {
     public Contract renewContract(Long contractId, LocalDate newEndDate) {
         Contract contract = contractMapper.selectById(contractId);
         if (contract == null) {
-            throw new RuntimeException("合同不存在");
+            throw new BusinessException("合同不存在");
         }
 
         if (!"ACTIVE".equals(contract.getStatus())) {
-            throw new RuntimeException("合同状态异常，无法续签");
+            throw new BusinessException("合同状态异常，无法续签");
         }
 
         // 更新合同结束日期
@@ -100,7 +101,7 @@ public class ContractService {
     public void terminateContract(Long contractId, String reason) {
         Contract contract = contractMapper.selectById(contractId);
         if (contract == null) {
-            throw new RuntimeException("合同不存在");
+            throw new BusinessException("合同不存在");
         }
 
         // 更新合同状态

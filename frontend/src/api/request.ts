@@ -31,20 +31,19 @@ api.interceptors.request.use(
 
 // 响应拦截器
 api.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response.data;
+  response => {
+    const res = response.data;
+    if (res.code === 'SUCCESS') {
+      return res.data;
+    }
+    // 处理错误
+    ElMessage.error(res.message || '请求失败');
+    return Promise.reject(new Error(res.message || '请求失败'));
   },
   error => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    } else if (error.response?.status === 403) {
-      ElMessage.error("权限不足");
-    } else if (error.response?.status >= 500) {
-      ElMessage.error("服务器错误");
-    } else {
-      ElMessage.error(error.response?.data?.message || "请求失败");
-    }
+    // 处理HTTP错误
+    const res = error.response?.data;
+    ElMessage.error(res?.message || '网络错误');
     return Promise.reject(error);
   }
 );

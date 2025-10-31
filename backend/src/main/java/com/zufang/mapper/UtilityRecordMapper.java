@@ -44,4 +44,13 @@ public interface UtilityRecordMapper extends BaseMapper<UtilityRecord> {
      */
     @Select("SELECT * FROM utility_records WHERE contract_id = #{contractId} ORDER BY record_date DESC")
     List<UtilityRecord> getRecordsByContract(@Param("contractId") Long contractId);
+
+    /**
+     * 根据房间ID获取水电费记录列表
+     * @param roomId 房间ID
+     * @return 水电费记录列表，按记录日期倒序排列
+     */
+    @Select("SELECT * FROM utility_records WHERE room_id = #{roomId} ORDER BY record_date DESC")
+    List<UtilityRecord> getRecordsByRoomId(@Param("roomId") Long roomId);
+
 }

@@ -1,5 +1,7 @@
 package com.zufang.controller;
 
+import com.zufang.annotation.LogOperation;
+import com.zufang.common.ApiResponse;
 import com.zufang.entity.Contract;
 import com.zufang.entity.UtilityRecord;
 import com.zufang.service.ContractService;
@@ -29,24 +31,26 @@ public class ContractController {
      * 创建合同
      */
     @PostMapping
-    public ResponseEntity<Contract> createContract(@Valid @RequestBody Contract contract) {
+    @LogOperation(operationType = "新增", operationDesc = "创建合同")
+    public ResponseEntity<ApiResponse<Contract>> createContract(@Valid @RequestBody Contract contract) {
         Contract createdContract = contractService.createContract(contract);
-        return ResponseEntity.ok(createdContract);
+        return ResponseEntity.ok(ApiResponse.success(createdContract));
     }
 
     /**
      * 获取合同详情
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Contract> getContract(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Contract>> getContract(@PathVariable Long id) {
         Contract contract = contractService.getContractDetails(id);
-        return ResponseEntity.ok(contract);
+        return ResponseEntity.ok(ApiResponse.success(contract));
     }
 
     /**
      * 续签合同
      */
     @PutMapping("/{id}/renew")
+    @LogOperation(operationType = "修改", operationDesc = "续签合同")
     public ResponseEntity<Contract> renewContract(@PathVariable Long id,
                                                 @RequestParam LocalDate newEndDate) {
         Contract contract = contractService.renewContract(id, newEndDate);
@@ -57,6 +61,7 @@ public class ContractController {
      * 终止合同
      */
     @PutMapping("/{id}/terminate")
+    @LogOperation(operationType = "修改", operationDesc = "终止合同")
     public ResponseEntity<Void> terminateContract(@PathVariable Long id,
                                                @RequestParam String reason) {
         contractService.terminateContract(id, reason);
@@ -67,9 +72,9 @@ public class ContractController {
      * 获取租户合同列表
      */
     @GetMapping("/tenant/{tenantId}")
-    public ResponseEntity<List<Contract>> getTenantContracts(@PathVariable Long tenantId) {
+    public ResponseEntity<ApiResponse<List<Contract>>> getTenantContracts(@PathVariable Long tenantId) {
         List<Contract> contracts = contractService.getTenantContracts(tenantId);
-        return ResponseEntity.ok(contracts);
+        return ResponseEntity.ok(ApiResponse.success(contracts));
     }
 
     /**

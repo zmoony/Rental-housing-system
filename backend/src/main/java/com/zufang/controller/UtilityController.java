@@ -1,5 +1,7 @@
 package com.zufang.controller;
 
+import com.zufang.annotation.LogOperation;
+import com.zufang.common.ApiResponse;
 import com.zufang.entity.UtilityRecord;
 import com.zufang.service.UtilityCalculationService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,8 @@ public class UtilityController {
      * 记录水电费读数
      */
     @PostMapping("/record")
-    public ResponseEntity<UtilityRecord> recordUtilityReading(@Valid @RequestBody UtilityRecordRequest request) {
+    @LogOperation(operationType = "添加", operationDesc = "记录水电费读数")
+    public ResponseEntity<ApiResponse<UtilityRecord>> recordUtilityReading(@Valid @RequestBody UtilityRecordRequest request) {
         UtilityRecord record = utilityCalculationService.calculateUtilityFee(
             request.getContractId(),
             request.getRoomId(),
@@ -36,16 +39,16 @@ public class UtilityController {
             request.getGasReading(),
             request.getRecordDate()
         );
-        return ResponseEntity.ok(record);
+        return ResponseEntity.ok(ApiResponse.success(record));
     }
 
     /**
      * 获取房间水电费记录
      */
     @GetMapping("/room/{roomId}")
-    public ResponseEntity<List<UtilityRecord>> getRoomUtilityRecords(@PathVariable Long roomId) {
-        // 实现获取房间水电费记录的逻辑
-        return ResponseEntity.ok(List.of());
+    public ResponseEntity<ApiResponse<List<UtilityRecord>>> getRoomUtilityRecords(@PathVariable Long roomId) {
+        List<UtilityRecord> records = utilityCalculationService.getRoomUtilityRecords(roomId);
+        return ResponseEntity.ok(ApiResponse.success(records));
     }
 
     /**
