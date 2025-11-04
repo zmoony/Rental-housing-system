@@ -2,6 +2,7 @@ package com.zufang.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zufang.dto.RoomDTO;
 import com.zufang.entity.Room;
 
 import java.util.List;
@@ -14,38 +15,38 @@ public interface RoomService extends IService<Room> {
     /**
      * 分页查询房间列表
      */
-    Page<Room> getRoomPage(Integer current, Integer size, String keyword);
-    
+    Page<RoomDTO> getRoomPage(Integer current, Integer size, String keyword,String houseId);
+
     /**
      * 根据房屋ID获取房间列表
      */
     List<Room> getRoomsByHouseId(Long houseId);
-    
+
     /**
      * 获取可用房间
      */
     List<Room> getAvailableRooms();
-    
+
     /**
      * 根据状态获取房间
      */
     List<Room> getRoomsByStatus(String status);
-    
+
     /**
      * 添加房间
      */
     boolean addRoom(Room room);
-    
+
     /**
      * 更新房间信息
      */
     boolean updateRoom(Room room);
-    
+
     /**
      * 删除房间
      */
     boolean deleteRoom(Long id);
-    
+
     /**
      * 更新房间状态
      */

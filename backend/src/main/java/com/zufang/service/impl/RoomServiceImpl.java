@@ -3,32 +3,69 @@ package com.zufang.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zufang.dto.RoomDTO;
+import com.zufang.entity.House;
 import com.zufang.entity.Room;
 import com.zufang.mapper.RoomMapper;
+import com.zufang.service.HouseService;
 import com.zufang.service.RoomService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 房间服务实现类
  */
 @Service
+@RequiredArgsConstructor
 public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements RoomService {
+    private final HouseService houseService;
 
     @Override
-    public Page<Room> getRoomPage(Integer current, Integer size, String keyword) {
+    public Page<RoomDTO> getRoomPage(Integer current, Integer size, String keyword,String houseId) {
         Page<Room> page = new Page<>(current, size);
         LambdaQueryWrapper<Room> wrapper = new LambdaQueryWrapper<>();
-        
-        if (StringUtils.hasText(keyword)) {
-            wrapper.like(Room::getRoomNumber, keyword);
+        if (StringUtils.hasText(houseId)){
+            wrapper.eq(Room::getHouseId, Long.valueOf(houseId));
         }
-        
+
+        if (StringUtils.hasText(keyword)) {
+
+            wrapper.and(w -> {
+                w.like(Room::getRoomNumber, keyword);
+                w.or().like(Room::getRoomType, keyword);
+            });
+        }
         wrapper.orderByDesc(Room::getCreatedAt);
-        return page(page, wrapper);
+        Page<Room> roomPage = this.page(page, wrapper);
+        Page<RoomDTO> roomDTOPage = new Page<>();
+        BeanUtils.copyProperties(roomPage, roomDTOPage, "records");
+
+        if (!CollectionUtils.isEmpty(roomPage.getRecords())) {
+            List<Room> rooms = roomPage.getRecords();
+            List<Long> houseIds = rooms.stream().map(Room::getHouseId).distinct().collect(Collectors.toList());
+
+            if (!CollectionUtils.isEmpty(houseIds)) {
+                Map<Long, String> houseIdNameMap = houseService.listByIds(houseIds).stream()
+                        .collect(Collectors.toMap(House::getId, House::getHouseName));
+
+                List<RoomDTO> roomDTOs = rooms.stream().map(room -> {
+                    RoomDTO roomDTO = new RoomDTO();
+                    BeanUtils.copyProperties(room, roomDTO);
+                    roomDTO.setHouseName(houseIdNameMap.get(room.getHouseId()));
+                    return roomDTO;
+                }).collect(Collectors.toList());
+                roomDTOPage.setRecords(roomDTOs);
+            }
+        }
+        return roomDTOPage;
     }
 
     @Override

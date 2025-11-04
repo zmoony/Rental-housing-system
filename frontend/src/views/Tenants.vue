@@ -1,98 +1,72 @@
 <template>
-  <div class="tenants-page">
-    <div class="page-header">
+  <div class="page-header">
+    <div class="header-title">
+      <el-icon color="#fff" :size="24"><User/></el-icon>
       <h2>租户管理</h2>
-      <div class="header-actions">
-        <el-input
+    </div>
+    <div class="header-actions">
+      <el-input
           v-model="queryParams.keyword"
           placeholder="请输入姓名/电话搜索"
           class="search-input"
           clearable
           @keyup.enter="handleSearch"
-        >
-          <template #prefix>
-            <i class="fas fa-search"></i>
-          </template>
-        </el-input>
-        <el-select
+      >
+        <template #prefix>
+          <i class="fas fa-search"></i>
+        </template>
+      </el-input>
+      <el-select
           v-model="queryParams.status"
           placeholder="状态"
           clearable
           class="status-select"
           @change="handleSearch"
-        >
-          <el-option label="活跃" value="ACTIVE" />
-          <el-option label="非活跃" value="INACTIVE" />
-          <el-option label="已搬出" value="MOVED_OUT" />
-        </el-select>
-        <el-button type="primary" class="add-button" @click="handleAdd">
-          <i class="fas fa-user-plus"></i> 添加租户
-        </el-button>
-      </div>
-    </div>
-
-    <div class="content-card">
-      <el-table 
-        :data="tenantList" 
-        stripe 
-        v-loading="loading"
-        class="custom-table"
       >
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="姓名" width="120" />
-        <el-table-column prop="phone" label="电话" width="150" />
-        <el-table-column prop="idCard" label="身份证" width="180" />
-        <el-table-column prop="gender" label="性别" width="80">
-          <template #default="{ row }">
-            <span class="gender-icon">
+        <el-option label="活跃" value="ACTIVE" />
+        <el-option label="非活跃" value="INACTIVE" />
+        <el-option label="已搬出" value="MOVED_OUT" />
+      </el-select>
+      <el-button type="primary" class="add-button" @click="handleAdd">
+        添加租户
+      </el-button>
+    </div>
+  </div>
+  <div class="common-page">
+
+
+    <div class="content">
+      <WisTable :data="tenantList" :columns="commonColumsAdd" ref="tableRefAdd"
+                :loading="loading" max-height="72vh"
+                border>
+        <template #gender="{row}">
+           <span class="gender-icon">
               <i :class="row.gender === 'MALE' ? 'fas fa-mars' : 'fas fa-venus'"></i>
               {{ row.gender === 'MALE' ? '男' : '女' }}
             </span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="age" label="年龄" width="80" />
-        <el-table-column prop="occupation" label="职业" width="120" />
-        <el-table-column prop="status" label="状态" width="100">
-          <template #default="{ row }">
-            <el-tag 
-              :type="getStatusType(row.status)" 
+        </template>
+
+        <template #status="{row}">
+          <el-tag
+              :type="getStatusType(row.status)"
               class="status-tag"
               effect="light"
-            >
-              <i :class="getStatusIcon(row.status)"></i>
-              {{ getStatusText(row.status) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="220" fixed="right">
-          <template #default="{ row }">
-            <div class="action-buttons">
-              <el-button size="small" class="view-button" @click="handleView(row)">
-                <i class="fas fa-eye"></i> 查看
-              </el-button>
-              <el-button size="small" type="primary" class="edit-button" @click="handleEdit(row)">
-                <i class="fas fa-edit"></i> 编辑
-              </el-button>
-              <el-button size="small" type="danger" class="delete-button" @click="handleDelete(row)">
-                <i class="fas fa-trash-alt"></i> 删除
-              </el-button>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
-      
+          >
+            <i :class="getStatusIcon(row.status)"></i>
+            {{ getStatusText(row.status) }}
+          </el-tag>
+        </template>
+
+        <template #opt="{row}">
+          <el-button text bg size="small" type="primary" @click="handleView(row)">查看</el-button>
+          <el-button text bg size="small" type="warning" @click="handleEdit(row)">编辑</el-button>
+          <el-button text bg size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+        </template>
+      </WisTable>
       <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="queryParams.current"
-          v-model:page-size="queryParams.size"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          background
-        />
+        <WisPager v-model:pager="pager" :total="pager.total" @change="fetchTenantList"></WisPager>
       </div>
+
     </div>
 
     <!-- 添加/编辑租户对话框 -->
@@ -214,6 +188,8 @@ import { ref, reactive, onMounted } from "vue";
 import { ElMessage, ElMessageBox, FormInstance } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import { getTenantList, getTenantDetail, addTenant, updateTenant, deleteTenant, Tenant, TenantQuery } from "@/api/tenant";
+import WisPager from "@/components/WisPager";
+import WisTable from "@/components/WisTable";
 
 // 查询参数
 const queryParams = reactive<TenantQuery>({
@@ -223,10 +199,26 @@ const queryParams = reactive<TenantQuery>({
   status: ''
 });
 
+const pager = reactive({
+  page: 1,
+  limit: 15,
+  total: 0
+});
+
 // 租户列表数据
 const tenantList = ref<Tenant[]>([]);
 const loading = ref(false);
 const total = ref(0);
+const commonColumsAdd = [
+  {prop: 'name', label: '姓名', width: '120', 'show-overflow-tooltip': true},
+  {prop: 'phone', label: '电话', width: '150', 'show-overflow-tooltip': true},
+  {prop: 'idCard', label: '身份证', width: '200', 'show-overflow-tooltip': true},
+  {prop: 'gender', label: '性别', width: '80', 'show-overflow-tooltip': true},
+  {prop: 'age', label: '年龄', width: '80',sortable: true, 'show-overflow-tooltip': true},
+  {prop: 'occupation', label: '职业', 'show-overflow-tooltip': true},
+  {prop: 'status', label: '状态', width: '150',sortable: true, 'show-overflow-tooltip': true},
+  {prop: 'opt', label: '操作', width: '220', 'show-overflow-tooltip': true},
+]
 
 // 表单相关
 const dialogVisible = ref(false);
@@ -426,30 +418,7 @@ const handleCurrentChange = (current: number) => {
 </script>
 
 <style scoped>
-.tenants-page {
-  padding: 20px;
-  background-color: var(--secondary-color);
-  min-height: calc(100vh - 60px);
-}
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.page-header h2 {
-  margin: 0;
-  color: var(--gray-800);
-  font-weight: 600;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
 
 .search-input {
   width: 250px;

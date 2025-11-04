@@ -3,6 +3,7 @@ package com.zufang.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zufang.annotation.LogOperation;
 import com.zufang.common.ApiResponse;
+import com.zufang.dto.RoomDTO;
 import com.zufang.entity.Room;
 import com.zufang.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,9 @@ public class RoomController {
     public ApiResponse getRoomPage(
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(required = false) String keyword) {
-        Page<Room> page = roomService.getRoomPage(current, size, keyword);
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String houseId) {
+        Page<RoomDTO> page = roomService.getRoomPage(current, size, keyword,houseId);
         return ApiResponse.success(page);
     }
 

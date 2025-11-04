@@ -244,9 +244,9 @@ const commonColumsAdd = [
   {prop: 'roomNumber', label: '房间号', width: '150', 'show-overflow-tooltip': true},
   {prop: 'roomType', label: '房间类型', width: '150', 'show-overflow-tooltip': true},
   {prop: 'area', label: '面积(㎡)', width: '150', 'show-overflow-tooltip': true},
-  {prop: 'monthlyRent', label: '月租金', width: '200', 'show-overflow-tooltip': true},
+  {prop: 'monthlyRent', label: '月租金', width: '200',sortable: true, 'show-overflow-tooltip': true},
   {prop: 'deposit', label: '押金', width: '200', 'show-overflow-tooltip': true},
-  {prop: 'status', label: '状态', width: '150', 'show-overflow-tooltip': true},
+  {prop: 'status', label: '状态', width: '150',sortable: true, 'show-overflow-tooltip': true},
   {prop: 'opt', label: '操作', width: '220', 'show-overflow-tooltip': true},
 ]
 
