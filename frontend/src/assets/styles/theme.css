@@ -188,6 +188,14 @@
   justify-content: flex-end;
 }
 
+.common-page{
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  height: calc(100% - 40px - 18px);
+
+}
+
 /* 统计卡片样式 */
 .stat-card {
   background-color: #fff;

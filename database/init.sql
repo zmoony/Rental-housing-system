@@ -49,9 +49,9 @@ CREATE TABLE rooms (
   area DECIMAL(8, 2),
   monthly_rent DECIMAL(10, 2) NOT NULL,
   deposit DECIMAL(10, 2) DEFAULT 0,
-  facilities TEXT [],
+  facilities TEXT ,
   -- 房间设施
-  images TEXT [],
+  images TEXT ,
   -- 房间图片
   status VARCHAR(20) NOT NULL DEFAULT 'AVAILABLE',
   -- AVAILABLE, OCCUPIED, MAINTENANCE

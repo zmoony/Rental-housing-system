@@ -98,6 +98,7 @@ api.interceptors.response.use(
       } else {
           err.message = "连接到服务器失败";
       }
+      ElMessage.error(err.message);
       if (err?.response?.data?.code === 401 || err.response.status === 403) {
           router.push("/login");
       }

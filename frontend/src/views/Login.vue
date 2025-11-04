@@ -3,7 +3,7 @@
     <div class="login-form">
       <div class="login-header">
         <h1>租房管理系统</h1>
-        <p>💱欢迎登录</p>
+        <p>💱 &nbsp;欢迎登录</p>
       </div>
 
       <el-form

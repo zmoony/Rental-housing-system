@@ -148,7 +148,7 @@ const mainMenuItems = ref([
     badge: 5
   },
   {
-    path: '/tenants',
+    path: '/rooms',
     title: '房间管理',
     icon: HomeFilled,
     color: 'linear-gradient(45deg, #4facfe, #00f2fe)'

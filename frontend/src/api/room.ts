@@ -7,7 +7,8 @@ export interface Room {
   roomNumber: string;
   roomType: string;
   area: number;
-  price: number;
+  monthlyRent: number;
+  deposit: number;
   status: string;
   facilities: string;
   description: string;
