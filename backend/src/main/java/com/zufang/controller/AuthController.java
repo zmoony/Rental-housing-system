@@ -68,4 +68,16 @@ public class AuthController {
 
         return ResponseEntity.ok(ApiResponse.success(user));
     }
+
+    /**
+     * 修改密码
+     */
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> changePassword(@RequestBody Map<String, String> changePasswordRequest) {
+        String username = changePasswordRequest.get("username");
+        String oldPassword = changePasswordRequest.get("oldPassword");
+        String newPassword = changePasswordRequest.get("newPassword");
+        authService.changePassword(username, oldPassword, newPassword);
+        return ResponseEntity.ok().build();
+    }
 }

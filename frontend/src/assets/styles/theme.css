@@ -125,7 +125,7 @@
 }
 
 .el-dialog__title {
-  font-weight: 600;
+  /*font-weight: 600;*/
   color: var(--gray-800);
 }
 
@@ -144,15 +144,29 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--gray-200);
+  background: url("@/assets/images/home/header-tag.png") no-repeat;
+  background-size:auto 100%;
+  height: 40px;
+  margin-bottom: 18px;
 }
 
-.page-header h2 {
-  margin: 0;
-  color: var(--gray-800);
-  font-weight: 600;
+.header-title{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 50px;
+  gap:8px;
+}
+
+.header-title h2 {
+  font-family: hzgb;
+  font-weight: 400;
+  font-size: 18px;
+  color: #FFFFFF;
+  line-height: 40px;
+  text-shadow: 0px 3px 3px #3878F0;
+  font-style: italic;
+  display: inline-block;
 }
 
 .header-actions {
@@ -162,17 +176,16 @@
 }
 
 .content {
-  background-color: #fff;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  height: 100%;
+  position: relative;
 }
 
 .pagination-container {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem;
 }
 
 /* 统计卡片样式 */
@@ -241,4 +254,52 @@
     margin-top: 1rem;
     flex-wrap: wrap;
   }
+}
+
+/* 给所有的el-dialog标题添加样式 */
+.el-dialog__header {
+  background: #aed0ee;
+  border-radius: 3px 3px 0px 0px;
+  padding-left: 20px;
+  padding-bottom: 0 !important;
+  height: 48px;
+  border-bottom: 1px solid #F3F3F3;
+
+}
+
+.el-dialog {
+  padding: 0 !important;
+}
+.el-dialog__body{
+  padding: var(--el-dialog-padding-primary) ;
+}
+.el-dialog__footer{
+  padding: var(--el-dialog-padding-primary);
+}
+.mb-5{
+  margin-bottom: 5px;
+}
+.pb-15{
+  padding-bottom: 15px;
+}
+.pb-10{
+  padding-bottom: 10px;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: #90caf9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

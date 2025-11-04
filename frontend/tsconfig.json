@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["src/*"]
+      },
+      "lib": [
+        "dom",
+        "esnext",
+        "es5",
+        "scripthost",
+        "es2015.promise"
+      ],
+      "allowSyntheticDefaultImports": true
+    }
+  }

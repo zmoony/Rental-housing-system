@@ -28,9 +28,9 @@ CREATE TABLE houses (
   house_type VARCHAR(20),
   -- APARTMENT, VILLA, OFFICE
   description TEXT,
-  facilities TEXT [],
+  facilities TEXT ,
   -- 设施列表
-  images TEXT [],
+  images TEXT ,
   -- 图片URL列表
   landlord_id BIGINT REFERENCES users(id),
   status VARCHAR(20) NOT NULL DEFAULT 'AVAILABLE',
@@ -232,11 +232,19 @@ CREATE INDEX idx_system_logs_created ON system_logs(created_at);
 
 -- 插入初始数据
 INSERT INTO
-  users (username, password, email, real_name, role, status)
+  users (
+    username,
+    password,
+    email,
+    real_name,
+    role,
+    status
+  )
 VALUES
   (
     'admin',
-    '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyUor6/Nm', -- 这是'admin'经过BCrypt加密后的值
+    '$2a$10$aXyrACJ26rTbgqR2dMLg.uO5MLkH3LhLXBdbTT4WCId9Gz7gWNNhy',
+    -- 这是'admin'经过BCrypt加密后的值
     'admin@zufang.com',
     '系统管理员',
     'ADMIN',

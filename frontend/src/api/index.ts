@@ -1,5 +1,5 @@
 import api from "./request";
-import type { LoginRequest, LoginResponse, User } from "@/types/auth";
+import type { LoginRequest, LoginResponse, User } from "@/types";
 
 // 用户认证相关 API
 export const login = (username: string, password: string): Promise<LoginResponse> => {
@@ -12,6 +12,10 @@ export const logout = (): Promise<void> => {
 
 export const getUserInfo = (): Promise<User> => {
   return api.get("/auth/user-info");
+};
+
+export const changePassword = (param:any) => {
+  return api.post("/auth/change-password", param);
 };
 
 // 合同管理 API

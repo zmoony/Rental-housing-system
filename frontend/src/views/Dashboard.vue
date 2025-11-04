@@ -281,8 +281,3 @@ const selectedHouse = ref('all');
   }
 }
 </style>
-  background: #f5f5f5;
-  border-radius: 4px;
-  color: #999;
-}
-</style>

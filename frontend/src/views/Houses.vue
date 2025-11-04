@@ -1,12 +1,13 @@
 <template>
-  <div class="houses-page">
     <div class="page-header">
-      <h2>房屋管理</h2>
+      <div class="header-title">
+        <el-icon color="#fff" :size="24"><OfficeBuilding/></el-icon>
+        <h2>房屋管理</h2>
+      </div>
       <div class="header-actions">
         <el-input
           v-model="queryParams.keyword"
           placeholder="搜索房屋名称或地址"
-          style="width: 250px; margin-right: 15px"
           clearable
           @keyup.enter="handleSearch"
         >
@@ -19,41 +20,25 @@
         <el-button type="primary" @click="handleAdd">添加房屋</el-button>
       </div>
     </div>
+  <div class="houses-page">
 
     <div class="content">
-      <el-table :data="houseList" stripe v-loading="loading">
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="houseName" label="房屋名称" />
-        <el-table-column prop="address" label="地址" />
-        <el-table-column prop="totalRooms" label="房间数" width="100" />
-        <el-table-column prop="totalArea" label="总面积(㎡)" width="120" />
-        <el-table-column prop="houseType" label="房屋类型" width="120" />
-        <el-table-column prop="status" label="状态" width="100">
-          <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)">
-              {{ getStatusText(row.status) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="220">
-          <template #default="{ row }">
-            <el-button size="small" @click="handleView(row)">查看</el-button>
-            <el-button size="small" type="primary" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      
+      <WisTable :data="houseList" :columns="commonColumsAdd" ref="tableRefAdd"
+                :loading="loading" max-height="72vh"
+                border>
+        <template #status="{row}">
+          <el-tag :type="getStatusType(row.status)">
+            {{ getStatusText(row.status) }}
+          </el-tag>
+        </template>
+        <template #opt="{row}">
+            <el-button text bg size="small" type="primary" @click="handleView(row)">查看</el-button>
+            <el-button text bg size="small" type="warning" @click="handleEdit(row)">编辑</el-button>
+            <el-button text bg size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+        </template>
+      </WisTable>
       <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="queryParams.current"
-          v-model:page-size="queryParams.size"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <WisPager v-model:pager="pager" :total="pager.total" @change="getList"></WisPager>
       </div>
     </div>
     
@@ -123,24 +108,95 @@
     
     <!-- 房屋详情对话框 -->
     <el-dialog
-      v-model="detailVisible"
-      title="房屋详情"
-      width="650px"
+        v-model="detailVisible"
+        title="房屋详情"
+        :width="1200"
+        class="property-detail-dialog"
     >
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="房屋名称">{{ detail.houseName }}</el-descriptions-item>
-        <el-descriptions-item label="房屋状态">
-          <el-tag :type="getStatusType(detail.status)">
-            {{ getStatusText(detail.status) }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="地址" :span="2">{{ detail.address }}</el-descriptions-item>
-        <el-descriptions-item label="房间数">{{ detail.totalRooms }}</el-descriptions-item>
-        <el-descriptions-item label="总面积">{{ detail.totalArea }} ㎡</el-descriptions-item>
-        <el-descriptions-item label="房屋类型">{{ detail.houseType }}</el-descriptions-item>
-        <el-descriptions-item label="设施" :span="2">{{ detail.facilities }}</el-descriptions-item>
-        <el-descriptions-item label="描述" :span="2">{{ detail.description }}</el-descriptions-item>
-      </el-descriptions>
+      <div class="card-header">
+        <el-icon><InfoFilled /></el-icon>
+        <span>基本信息</span>
+      </div>
+      <!-- 基本信息卡片 -->
+      <el-card class="info-card" shadow="always">
+        <el-row :gutter="24">
+          <el-col :span="12">
+            <div class="info-item">
+              <label>房屋名称</label>
+              <div class="info-value">{{ detail.houseName }}</div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="info-item">
+              <label>房屋状态</label>
+              <div class="info-value">
+                <el-text
+                    :type="getStatusType(detail.status)"
+                >
+                  {{ getStatusText(detail.status) }}
+                </el-text>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="24">
+          <el-col :span="24">
+            <div class="info-item">
+              <label>地址</label>
+              <div class="info-value">
+                <el-icon><Location /></el-icon>
+                {{ detail.address }}
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="24">
+          <el-col :span="8">
+            <div class="info-item">
+              <label>房间数</label>
+              <div class="info-value">{{ detail.totalRooms }} 间</div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="info-item">
+              <label>总面积</label>
+              <div class="info-value">{{ detail.totalArea }} m²</div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="info-item">
+              <label>房屋类型</label>
+              <div class="info-value">{{ detail.houseType }}</div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+
+      <div class="card-header">
+        <el-icon><Grid /></el-icon>
+        <span>房屋设施</span>
+      </div>
+      <!-- 设施信息卡片 -->
+      <el-card class="facilities-card" shadow="always">
+
+        <div class="facilities-grid">
+          {{ detail.facilities }}
+        </div>
+      </el-card>
+
+      <div class="card-header">
+        <el-icon><Document /></el-icon>
+        <span>房屋描述</span>
+      </div>
+      <!-- 描述信息 -->
+      <el-card class="description-card" shadow="always">
+        <div class="description-content">
+          {{ detail.description || '暂无描述信息' }}
+        </div>
+      </el-card>
+
     </el-dialog>
   </div>
 </template>
@@ -148,20 +204,35 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Search } from "@element-plus/icons-vue";
+import {OfficeBuilding, Search} from "@element-plus/icons-vue";
 import { getHouseList, getHouseDetail, addHouse, updateHouse, deleteHouse, type House } from "../api/house";
+import WisPager from "@/components/WisPager";
+import WisTable from "@/components/WisTable";
 
 // 查询参数
 const queryParams = reactive({
-  current: 1,
-  size: 10,
   keyword: ""
 });
+
+const pager = reactive({
+  page: 1,
+  limit: 15,
+  total: 0
+});
+
+const commonColumsAdd = [
+  {prop: 'houseName', label: '房屋名称', 'show-overflow-tooltip': true},
+  {prop: 'address', label: '地址', 'show-overflow-tooltip': true},
+  {prop: 'totalRooms', label: '房间数', width: '100', 'show-overflow-tooltip': true},
+  {prop: 'totalArea', label: '总面积(㎡)', width: '120', 'show-overflow-tooltip': true},
+  {prop: 'houseType', label: '房屋类型', width: '120', 'show-overflow-tooltip': true},
+  {prop: 'status', label: '状态', width: '100', 'show-overflow-tooltip': true},
+  {prop: 'opt', label: '操作', width: '220', 'show-overflow-tooltip': true},
+]
 
 // 数据列表
 const houseList = ref<House[]>([]);
 const loading = ref(false);
-const total = ref(0);
 
 // 表单相关
 const dialogVisible = ref(false);
@@ -232,12 +303,17 @@ onMounted(() => {
 // 获取列表数据
 const getList = () => {
   loading.value = true;
-  getHouseList(queryParams)
+  getHouseList({
+    ...queryParams,
+    current: pager.page,
+    size: pager.limit
+  })
     .then(res => {
-      houseList.value = res.data.records;
-      total.value = res.data.total;
+      houseList.value = res?.records || [];
+      pager.total = res?.total || 0;
     })
-    .catch(() => {
+    .catch((error) => {
+      console.error('Error:', error);
       ElMessage.error("获取房屋列表失败");
     })
     .finally(() => {
@@ -247,7 +323,7 @@ const getList = () => {
 
 // 搜索
 const handleSearch = () => {
-  queryParams.current = 1;
+  pager.page = 1;
   getList();
 };
 
@@ -286,7 +362,7 @@ const handleEdit = (row: House) => {
 const handleView = (row: House) => {
   getHouseDetail(row.id as number)
     .then(res => {
-      detail.value = res.data;
+      detail.value = res;
       detailVisible.value = true;
     })
     .catch(() => {
@@ -334,17 +410,6 @@ const submitForm = () => {
   });
 };
 
-// 分页大小变化
-const handleSizeChange = (size: number) => {
-  queryParams.size = size;
-  getList();
-};
-
-// 页码变化
-const handleCurrentChange = (current: number) => {
-  queryParams.current = current;
-  getList();
-};
 </script>
 
 <style scoped>
@@ -352,34 +417,150 @@ const handleCurrentChange = (current: number) => {
   background: white;
   border-radius: 8px;
   padding: 20px;
+  height: calc(100% - 40px - 18px);
 }
 
-.page-header {
+.property-detail-dialog {
+  --el-dialog-padding-primary: 0;
+}
+
+.dialog-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e6e6e6;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin: -20px -24px 0 -24px;
 }
 
-.page-header h2 {
-  margin: 0;
-  color: #333;
-}
-
-.header-actions {
+.header-left {
   display: flex;
   align-items: center;
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.content {
-  margin-bottom: 20px;
+.header-icon {
+  font-size: 20px;
+  margin-right: 8px;
 }
 
-.pagination-container {
-  margin-top: 20px;
+.status-section {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.status-tag {
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+.info-card,
+.facilities-card,
+.description-card {
+  margin-bottom: 16px;
+  border: 1px solid #e4e7ed;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: #303133;
+  background: linear-gradient(90deg, #3D89F4, #56B8FF);
+  border-radius: 6px 6px 0px 0px;
+  width: 220px;
+  font-family: hzgb;
+  font-weight: 400;
+  font-size: 16px;
+  color: #FFFFFF;
+  line-height: 18px;
+  font-style: italic;
+  padding: 8px 16px;
+}
+
+.card-header .el-icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.info-item {
+  margin-bottom: 16px;
+}
+
+.info-item label {
+  display: block;
+  font-size: 12px;
+  color: #909399;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #303133;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  min-height: 20px;
+}
+
+.info-value .el-icon {
+  margin-right: 6px;
+  color: #67c23a;
+}
+
+.facilities-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #606266;
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #efaab4;
+}
+
+.facility-tag {
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.description-content {
+  line-height: 1.6;
+  color: #606266;
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #409eff;
+}
+
+.dialog-footer {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 0 0 0;
+  border-top: 1px solid #e4e7ed;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .property-detail-dialog {
+    width: 95vw !important;
+    margin: 0 auto;
+  }
+
+  .dialog-header {
+    padding: 16px;
+  }
+
+  .el-row .el-col {
+    margin-bottom: 12px;
+  }
 }
 </style>

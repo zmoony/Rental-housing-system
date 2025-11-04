@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type { User } from "@/types/user";
+import type { User } from "@/types";
 import { login, logout, getUserInfo } from "@/api";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref<User | null>(null);
-  const token = ref<string | null>(localStorage.getItem("token"));
+  const token = ref<string | null>(null);
 
   const isLoggedIn = computed(() => !!token.value && !!user.value);
 
@@ -14,7 +14,7 @@ export const useUserStore = defineStore("user", () => {
       const response = await login(username, password);
       token.value = response.token;
       user.value = response.user;
-      localStorage.setItem("token", response.token);
+      // localStorage.setItem("token", response.token);
       return response;
     } catch (error) {
       throw error;
@@ -52,4 +52,10 @@ export const useUserStore = defineStore("user", () => {
     logoutUser,
     initUser
   };
+}, {
+  persist: {
+    key: 'user-store',
+    storage: localStorage,
+    paths: ['user', 'token']
+  }
 });

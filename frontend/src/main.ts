@@ -1,11 +1,13 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import mypinia from './pinia/index'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import './assets/styles/theme.css'
+import '@/assets/font/font.scss'
 
 // 引入Font Awesome 6
 const fontAwesomeCSS = document.createElement('link')
@@ -21,6 +23,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 app.use(router)
+app.use(mypinia)
 app.use(ElementPlus, {
   locale: zhCn,
 })

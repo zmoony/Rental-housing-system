@@ -3,7 +3,7 @@
     <div class="login-form">
       <div class="login-header">
         <h1>租房管理系统</h1>
-        <p>欢迎登录</p>
+        <p>💱欢迎登录</p>
       </div>
 
       <el-form
@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted ,h} from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { User, Lock } from "@element-plus/icons-vue";
@@ -71,7 +71,7 @@ const loginRules: FormRules = {
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
   password: [
     { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 6, message: "密码长度不能少于6位", trigger: "blur" }
+    { min: 4, message: "密码长度不能少于4位", trigger: "blur" }
   ]
 };
 
@@ -84,7 +84,10 @@ const handleLogin = async () => {
 
     await userStore.loginUser(loginForm.username, loginForm.password);
 
-    ElMessage.success("登录成功");
+    ElNotification({
+      title: '登陆成功',
+      message: h('i', { style: 'color: teal' }, '欢迎回来')
+    })
     router.push("/");
   } catch (error: any) {
     ElMessage.error(error.message || "登录失败");
@@ -92,6 +95,20 @@ const handleLogin = async () => {
     loading.value = false;
   }
 };
+
+//监听enter实现登录
+const initBindEvent = () => {
+  document.body.addEventListener("keydown", async (event: any) => {
+    if (event.keyCode === 13) {
+      await handleLogin();
+    }
+  });
+}
+
+//初始化
+onMounted(() => {
+  initBindEvent();
+})
 </script>
 
 <style scoped>
@@ -99,8 +116,13 @@ const handleLogin = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: url("@/assets/images/home/zufang.png") no-repeat ;
+  background-size: 100% 100%;
+  height: 100vh;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .login-form {

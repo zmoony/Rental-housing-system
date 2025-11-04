@@ -55,4 +55,22 @@ public class AuthService {
 
         return result;
     }
+
+    /**
+     * 修改密码
+     * @param username 用户名
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     */
+    public void changePassword(String username, String oldPassword, String newPassword) {
+        User user = userMapper.getUserByUsername(username);
+        if (user == null) {
+            throw new BusinessException("USER_NOT_FOUND", "用户不存在");
+        }
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new BusinessException("INVALID_PASSWORD", "密码错误");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userMapper.updateById(user);
+    }
 }
