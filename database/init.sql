@@ -5,7 +5,7 @@ CREATE TABLE users (
   id BIGSERIAL PRIMARY KEY,
   username VARCHAR(50) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
-  email VARCHAR(100) UNIQUE,
+  email VARCHAR(100) ,
   phone VARCHAR(20),
   real_name VARCHAR(50),
   id_card VARCHAR(18),

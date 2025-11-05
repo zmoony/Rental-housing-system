@@ -116,10 +116,10 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="dialogVisible = false">
-            <i class="fas fa-times"></i> 取消
+             取消
           </el-button>
           <el-button type="primary" @click="handleSubmit">
-            <i class="fas fa-check"></i> 确定
+             确定
           </el-button>
         </div>
       </template>
@@ -193,8 +193,6 @@ import WisTable from "@/components/WisTable";
 
 // 查询参数
 const queryParams = reactive<TenantQuery>({
-  current: 1,
-  size: 10,
   keyword: '',
   status: ''
 });
@@ -298,9 +296,13 @@ onMounted(() => {
 const fetchTenantList = async () => {
   loading.value = true;
   try {
-    const res = await getTenantList(queryParams);
-    tenantList.value = res.data.records;
-    total.value = res.data.total;
+    const res = await getTenantList({
+      ...queryParams,
+      current: pager.page,
+      size: pager.limit
+    });
+    tenantList.value = res.records;
+    pager.total = res.total;
   } catch (error) {
     console.error('获取租户列表失败', error);
     ElMessage.error('获取租户列表失败');
@@ -404,17 +406,6 @@ const handleSubmit = async () => {
   });
 };
 
-// 分页大小变化
-const handleSizeChange = (size: number) => {
-  queryParams.size = size;
-  fetchTenantList();
-};
-
-// 页码变化
-const handleCurrentChange = (current: number) => {
-  queryParams.current = current;
-  fetchTenantList();
-};
 </script>
 
 <style scoped>

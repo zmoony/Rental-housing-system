@@ -3,6 +3,7 @@ package com.zufang.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zufang.annotation.LogOperation;
 import com.zufang.common.ApiResponse;
+import com.zufang.dto.TenantDTO;
 import com.zufang.entity.Tenant;
 import com.zufang.service.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,9 @@ public class TenantController {
     public ApiResponse getTenantPage(
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(required = false) String keyword) {
-        Page<Tenant> page = tenantService.getTenantPage(current, size, keyword);
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status) {
+        Page<TenantDTO> page = tenantService.getTenantPage(current, size, keyword, status);
         return ApiResponse.success(page);
     }
 
@@ -73,7 +75,7 @@ public class TenantController {
      */
     @PostMapping
     @LogOperation(operationType = "新增", operationDesc = "添加租户信息")
-    public ApiResponse addTenant(@RequestBody Tenant tenant) {
+    public ApiResponse addTenant(@RequestBody TenantDTO tenant) {
         boolean result = tenantService.addTenant(tenant);
         return result ? ApiResponse.success("添加成功") : ApiResponse.error("添加失败");
     }

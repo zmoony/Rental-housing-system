@@ -17,8 +17,6 @@ export interface Tenant {
 }
 
 export interface TenantQuery {
-  current: number;
-  size: number;
   keyword?: string;
   userId?: number;
   status?: string;
@@ -29,7 +27,7 @@ export interface TenantQuery {
  */
 export function getTenantList(params: TenantQuery) {
   return request({
-    url: '/tenant/list',
+    url: '/tenants/page',
     method: 'get',
     params
   });
@@ -40,7 +38,7 @@ export function getTenantList(params: TenantQuery) {
  */
 export function getTenantDetail(id: number) {
   return request({
-    url: `/tenant/${id}`,
+    url: `/tenants/${id}`,
     method: 'get'
   });
 }
@@ -50,7 +48,7 @@ export function getTenantDetail(id: number) {
  */
 export function addTenant(data: Tenant) {
   return request({
-    url: '/tenant',
+    url: '/tenants',
     method: 'post',
     data
   });
@@ -61,7 +59,7 @@ export function addTenant(data: Tenant) {
  */
 export function updateTenant(data: Tenant) {
   return request({
-    url: '/tenant',
+    url: '/tenants',
     method: 'put',
     data
   });
@@ -72,7 +70,7 @@ export function updateTenant(data: Tenant) {
  */
 export function deleteTenant(id: number) {
   return request({
-    url: `/tenant/${id}`,
+    url: `/tenants/${id}`,
     method: 'delete'
   });
 }
@@ -82,7 +80,7 @@ export function deleteTenant(id: number) {
  */
 export function updateTenantStatus(id: number, status: string) {
   return request({
-    url: `/tenant/status/${id}/${status}`,
+    url: `/tenants/status/${id}/${status}`,
     method: 'put'
   });
 }
