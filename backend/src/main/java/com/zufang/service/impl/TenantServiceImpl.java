@@ -1,6 +1,7 @@
 package com.zufang.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zufang.common.Constants;
@@ -27,18 +28,13 @@ import java.util.List;
 public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> implements TenantService {
 
     private final UsersService userService;
+    private final TenantMapper tenantMapper;
 
     @Override
-    public Page<TenantDTO> getTenantPage(Integer current, Integer size, String keyword, String status) {
-        Page<Tenant> page = new Page<>(current, size);
-        LambdaQueryWrapper<Tenant> wrapper = new LambdaQueryWrapper<>();
-
-        // 如果有关键字，可以根据姓名/电话进行查询 status根据状态搜索
-        // 这里需要自定义SQL或者使用多表关联查询
-
-        wrapper.orderByDesc(Tenant::getCreatedAt);
-        Page<Tenant> tenantPage = page(page, wrapper);
-        return ;
+    public IPage<TenantDTO> getTenantPage(Integer current, Integer size, String keyword, String status) {
+        Page<TenantDTO> page = new Page<>(current, size);
+        IPage<TenantDTO> tenantAndUser = tenantMapper.getTenantAndUser(page, keyword, status);
+        return tenantAndUser;
     }
 
     @Override

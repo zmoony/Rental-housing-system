@@ -20,10 +20,6 @@ public interface TenantMapper extends BaseMapper<Tenant> {
     /**
      * 根据用户ID获取租户信息
      */
-    @Select("SELECT * FROM tenants WHERE " +
-            "(#{keyword} IS NULL OR name LIKE CONCAT('%', #{keyword}, '%') OR phone LIKE CONCAT('%', #{keyword}, '%')) " +
-            "AND (#{status} IS NULL OR status = #{status}) " +
-            "ORDER BY created_at DESC")
     IPage<TenantDTO> getTenantAndUser(Page<TenantDTO> page,
                                       @Param("keyword") String keyword,
                                       @Param("status") String status);

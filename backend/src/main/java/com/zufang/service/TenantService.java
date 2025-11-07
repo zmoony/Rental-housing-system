@@ -1,5 +1,6 @@
 package com.zufang.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zufang.dto.TenantDTO;
@@ -15,7 +16,7 @@ public interface TenantService extends IService<Tenant> {
     /**
      * 分页查询租户列表
      */
-    Page<TenantDTO> getTenantPage(Integer current, Integer size, String keyword, String status);
+    IPage<TenantDTO> getTenantPage(Integer current, Integer size, String keyword, String status);
 
     /**
      * 根据用户ID获取租户信息

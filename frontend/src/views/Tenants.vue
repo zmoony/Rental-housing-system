@@ -5,17 +5,6 @@
       <h2>租户管理</h2>
     </div>
     <div class="header-actions">
-      <el-input
-          v-model="queryParams.keyword"
-          placeholder="请输入姓名/电话搜索"
-          class="search-input"
-          clearable
-          @keyup.enter="handleSearch"
-      >
-        <template #prefix>
-          <i class="fas fa-search"></i>
-        </template>
-      </el-input>
       <el-select
           v-model="queryParams.status"
           placeholder="状态"
@@ -27,6 +16,19 @@
         <el-option label="非活跃" value="INACTIVE" />
         <el-option label="已搬出" value="MOVED_OUT" />
       </el-select>
+      <el-input
+          v-model="queryParams.keyword"
+          placeholder="请输入姓名/电话搜索"
+          class="search-input"
+          clearable
+      >
+        <template #append>
+          <el-button @click="handleSearch">
+            <el-icon><Search /></el-icon>
+          </el-button>
+        </template>
+      </el-input>
+
       <el-button type="primary" class="add-button" @click="handleAdd">
         添加租户
       </el-button>
@@ -41,9 +43,13 @@
                 border>
         <template #gender="{row}">
            <span class="gender-icon">
-              <i :class="row.gender === 'MALE' ? 'fas fa-mars' : 'fas fa-venus'"></i>
-              {{ row.gender === 'MALE' ? '男' : '女' }}
+              <i :class="IdCardUtils.getGender(row.idCard) === '男' ? 'fas fa-mars' : 'fas fa-venus'"></i>
+              {{IdCardUtils.getGender(row.idCard) }}
             </span>
+        </template>
+
+        <template #age="{row}">
+          {{IdCardUtils.getAge(row.idCard)}}
         </template>
 
         <template #status="{row}">
@@ -84,17 +90,14 @@
         <el-form-item label="电话" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入电话" />
         </el-form-item>
-        <el-form-item label="身份证" prop="idCard">
-          <el-input v-model="form.idCard" placeholder="请输入身份证号码" />
+        <el-form-item label="身份证" prop="idCard" >
+          <el-input v-model="form.idCard" placeholder="请输入身份证号码" @change="getIdCardInfo"/>
         </el-form-item>
         <el-form-item label="性别" prop="gender">
-          <el-radio-group v-model="form.gender">
-            <el-radio label="MALE">男</el-radio>
-            <el-radio label="FEMALE">女</el-radio>
-          </el-radio-group>
+          <el-input v-model="form.gender" disabled/>
         </el-form-item>
         <el-form-item label="年龄" prop="age">
-          <el-input-number v-model="form.age" :min="1" :max="120" />
+          <el-input-number v-model="form.age" :min="1" :max="120" disabled/>
         </el-form-item>
         <el-form-item label="职业" prop="occupation">
           <el-input v-model="form.occupation" placeholder="请输入职业" />
@@ -127,6 +130,100 @@
 
     <!-- 查看租户详情对话框 -->
     <el-dialog
+        v-model="detailDialogVisible"
+        title="租户详情"
+        :width="1200"
+        class="property-detail-dialog"
+    >
+      <div class="card-header">
+        <el-icon><InfoFilled /></el-icon>
+        <span>基本信息</span>
+      </div>
+      <!-- 基本信息卡片 -->
+      <el-card class="info-card" shadow="always">
+        <el-row :gutter="24">
+          <el-col :span="12">
+            <div class="info-item">
+              <label>姓名</label>
+              <div class="info-value">{{ detail.name }}</div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="info-item">
+              <label>身份证</label>
+              <div class="info-value">{{ detail.idCard }}</div>
+            </div>
+          </el-col>
+
+        </el-row>
+
+        <el-row :gutter="24">
+          <el-col :span="8">
+            <div class="info-item">
+              <label>电话</label>
+              <div class="info-value">
+                <el-icon><Location /></el-icon>
+                {{ detail.phone }}
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="info-item">
+              <label>性别</label>
+              <div class="info-value">
+                <span class="gender-icon">
+              <i :class="IdCardUtils.getGender(detail.idCard) === '男' ? 'fas fa-mars' : 'fas fa-venus'"></i>
+              {{IdCardUtils.getGender(detail.idCard) }}
+            </span>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="info-item">
+              <label>年龄</label>
+              <div class="info-value">  {{IdCardUtils.getAge(detail.idCard)}} 岁</div>
+            </div>
+          </el-col>
+        </el-row>
+
+
+      </el-card>
+
+      <div class="card-header">
+        <el-icon><Grid /></el-icon>
+        <span>其他信息</span>
+      </div>
+      <!-- 设施信息卡片 -->
+      <el-card class="facilities-card" shadow="always">
+        <el-row :gutter="24">
+          <el-col :span="24">
+            <div class="info-item">
+              <label>职业</label>
+              <div class="info-value">{{ detail.occupation }} </div>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="24">
+          <el-col :span="8">
+            <div class="info-item">
+              <label>状态</label>
+              <div class="info-value"> <el-tag :type="getStatusType(detail.status)" class="status-tag" effect="light">
+                <i :class="getStatusIcon(detail.status)"></i>
+                {{ getStatusText(detail.status) }}
+              </el-tag></div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="info-item">
+              <label>紧急联系人</label>
+              <div class="info-value">{{ detail.emergencyContact }}</div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+
+    </el-dialog>
+    <el-dialog
       title="租户详情"
       v-model="detailDialogVisible"
       width="600px"
@@ -158,28 +255,7 @@
       </el-descriptions>
     </el-dialog>
 
-    <!-- 删除确认对话框 -->
-    <el-dialog
-      title="提示"
-      v-model="deleteDialogVisible"
-      width="400px"
-      class="custom-dialog"
-    >
-      <div class="delete-confirm">
-        <i class="fas fa-exclamation-triangle warning-icon"></i>
-        <p>确定要删除该租户吗？</p>
-      </div>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="deleteDialogVisible = false">
-            <i class="fas fa-times"></i> 取消
-          </el-button>
-          <el-button type="danger" @click="confirmDelete">
-            <i class="fas fa-trash-alt"></i> 确定
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
+
   </div>
 </template>
 
@@ -190,6 +266,9 @@ import { Search } from "@element-plus/icons-vue";
 import { getTenantList, getTenantDetail, addTenant, updateTenant, deleteTenant, Tenant, TenantQuery } from "@/api/tenant";
 import WisPager from "@/components/WisPager";
 import WisTable from "@/components/WisTable";
+import { IdCardUtils } from "@/utils/IdCardUtils";
+import {deleteRoom} from "@/api/room";
+
 
 // 查询参数
 const queryParams = reactive<TenantQuery>({
@@ -208,12 +287,12 @@ const tenantList = ref<Tenant[]>([]);
 const loading = ref(false);
 const total = ref(0);
 const commonColumsAdd = [
-  {prop: 'name', label: '姓名', width: '120', 'show-overflow-tooltip': true},
+  {prop: 'name', label: '姓名', "min-width": '200', 'show-overflow-tooltip': true},
   {prop: 'phone', label: '电话', width: '150', 'show-overflow-tooltip': true},
   {prop: 'idCard', label: '身份证', width: '200', 'show-overflow-tooltip': true},
   {prop: 'gender', label: '性别', width: '80', 'show-overflow-tooltip': true},
   {prop: 'age', label: '年龄', width: '80',sortable: true, 'show-overflow-tooltip': true},
-  {prop: 'occupation', label: '职业', 'show-overflow-tooltip': true},
+  {prop: 'occupation', label: '职业',"min-width": '150', 'show-overflow-tooltip': true},
   {prop: 'status', label: '状态', width: '150',sortable: true, 'show-overflow-tooltip': true},
   {prop: 'opt', label: '操作', width: '220', 'show-overflow-tooltip': true},
 ]
@@ -226,7 +305,7 @@ const form = reactive<Partial<Tenant>>({
   name: '',
   phone: '',
   idCard: '',
-  gender: 'MALE',
+  gender: '',
   age: 18,
   occupation: '',
   emergencyContact: '',
@@ -326,7 +405,7 @@ const resetForm = () => {
   form.name = '';
   form.phone = '';
   form.idCard = '';
-  form.gender = 'MALE';
+  form.gender = '';
   form.age = 18;
   form.occupation = '';
   form.emergencyContact = '';
@@ -346,6 +425,8 @@ const handleEdit = (row: Tenant) => {
   resetForm();
   dialogTitle.value = '编辑租户';
   Object.assign(form, row);
+  form.age = IdCardUtils.getAge(row.idCard);
+  form.gender = IdCardUtils.getGender(row.idCard);
   dialogVisible.value = true;
 };
 
@@ -363,22 +444,21 @@ const handleView = async (row: Tenant) => {
 
 // 删除租户
 const handleDelete = (row: Tenant) => {
-  deleteId.value = row.id;
-  deleteDialogVisible.value = true;
+  ElMessageBox.confirm(`确认删除租户 ${row.name} 吗？`, "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(async () => {
+    try {
+      await deleteTenant(row.id);
+      ElMessage.success("删除成功");
+      fetchTenantList();
+    } catch (error) {
+      console.error("删除房间失败", error);
+    }
+  }).catch(() => {});
 };
 
-// 确认删除
-const confirmDelete = async () => {
-  try {
-    await deleteTenant(deleteId.value);
-    ElMessage.success('删除成功');
-    deleteDialogVisible.value = false;
-    fetchTenantList();
-  } catch (error) {
-    console.error('删除租户失败', error);
-    ElMessage.error('删除租户失败');
-  }
-};
 
 // 提交表单
 const handleSubmit = async () => {
@@ -404,6 +484,12 @@ const handleSubmit = async () => {
       }
     }
   });
+};
+
+//获取型性别/年龄
+const getIdCardInfo = (idCard: string) => {
+  form.age = IdCardUtils.getAge(idCard);
+  form.gender = IdCardUtils.getGender(idCard);
 };
 
 </script>

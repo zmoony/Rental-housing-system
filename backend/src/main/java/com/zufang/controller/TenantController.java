@@ -1,5 +1,6 @@
 package com.zufang.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zufang.annotation.LogOperation;
 import com.zufang.common.ApiResponse;
@@ -30,7 +31,7 @@ public class TenantController {
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String status) {
-        Page<TenantDTO> page = tenantService.getTenantPage(current, size, keyword, status);
+        IPage<TenantDTO> page = tenantService.getTenantPage(current, size, keyword, status);
         return ApiResponse.success(page);
     }
 
